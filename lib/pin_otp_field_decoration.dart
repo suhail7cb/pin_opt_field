@@ -24,7 +24,7 @@ class BoxOtpDecorator implements OtpFieldDecorator {
     this.borderColor = Colors.grey,
     this.borderRadius = 8.0,
     this.fillColor = Colors.transparent,
-    this.hintChar = '*',
+    this.hintChar = '',
     this.hintStyle,
   });
 
@@ -62,7 +62,7 @@ class CircleOtpDecorator implements OtpFieldDecorator {
     this.borderColor = Colors.grey,
     this.borderRadius = 30.0, // large radius for circle shape
     this.fillColor = Colors.transparent,
-    this.hintChar = '*',
+    this.hintChar = '',
     this.hintStyle,
   });
 
@@ -96,7 +96,7 @@ class UnderlineOtpDecorator implements OtpFieldDecorator {
   UnderlineOtpDecorator({
     this.borderColor = Colors.grey,
     this.fillColor = Colors.transparent,
-    this.hintChar = '*',
+    this.hintChar = '',
     this.hintStyle,
   });
 

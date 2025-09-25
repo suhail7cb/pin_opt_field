@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'OTP PIN Field Demo'),
     );
   }
 }
@@ -33,54 +33,65 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
-
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
         child: Column(
          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
+            Text('Box PIN:', style: TextStyle(fontSize: 20),),
+            SizedBox(height: 5,),
             PinOtpField(
               length: 5, // OTP length
-              decorator: BoxOtpDecorator(), // Custom decorator for boxed style
+              decorator: BoxOtpDecorator(hintChar: '*'), // Custom decorator for boxed style
               obscure: false, // Show or hide input
               hintChar: '*', // Custom hint character
+              onCompleted: (String otp) {
+                // Action when OTP entry is complete
+                print('PIN entered: $otp');
+                // Add further OTP validation logic here if needed
+              },
+            ),
+            SizedBox(height: 30,),
+            Text('Rounded OTP:', style: TextStyle(fontSize: 20),),
+            SizedBox(height: 5,),
+            PinOtpField(
+              length: 4, // OTP length
+              decorator: CircleOtpDecorator(hintChar: '-'), // Custom decorator for boxed style
+              obscure: false, // Show or hide input
+              hintChar: '', // Custom hint character
               onCompleted: (String otp) {
                 // Action when OTP entry is complete
                 print('OTP entered: $otp');
                 // Add further OTP validation logic here if needed
               },
             ),
+            SizedBox(height: 30,),
+            Text('Underline OTP:', style: TextStyle(fontSize: 20),),
+            SizedBox(height: 5,),
+            PinOtpField(
+              length: 4, // OTP length
+              decorator: UnderlineOtpDecorator(hintChar: '*'), // Custom decorator for boxed style
+              obscure: false, // Show or hide input
+              hintChar: '', // Custom hint character
+              onCompleted: (String otp) {
+                // Action when OTP entry is complete
+                print('OTP entered: $otp');
+                // Add further OTP validation logic here if needed
+              },
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

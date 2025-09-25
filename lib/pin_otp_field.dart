@@ -44,7 +44,7 @@ class PinOtpField extends StatefulWidget {
     required this.length,
     required this.decorator,
     this.obscure = false,
-    this.hintChar = '*',
+    this.hintChar = '',
     required this.onCompleted,
   }) : super(key: key);
 
@@ -96,14 +96,11 @@ class _PinOtpFieldState extends State<PinOtpField> {
       keyboardType: TextInputType.number, // Numeric keyboard for OTP digits
       // maxLength: 2, // Only allow one character per field
       maxLength: widget.length, // Only allow one character per field
-
         onChanged: (value) {
-
         //To check if value is pasted or typed
           if (value.length == widget.length) {
             _handlePaste(value);
           }
-
           else {
             if (value.length > 1) {
               // This can happen if user pastes or quickly types: keep only last char
@@ -133,17 +130,14 @@ class _PinOtpFieldState extends State<PinOtpField> {
             if (_controllers.every((c) => c.text.isNotEmpty)) {
               widget.onCompleted(_controllers.map((c) => c.text).join());
             }
-
             setState(() {});
           }
         }
-
     );
   }
 
   void _handlePaste(String pastedText) {
     // Distribute pasted text across fields
-
     for (int i = 0; i < widget.length; i++) {
       if (i < pastedText.length) {
         _controllers[i].text = pastedText[i];
@@ -160,11 +154,8 @@ class _PinOtpFieldState extends State<PinOtpField> {
     if (_controllers.every((c) => c.text.isNotEmpty)) {
       widget.onCompleted(_controllers.map((c) => c.text).join());
     }
-
     setState(() {});
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +166,6 @@ class _PinOtpFieldState extends State<PinOtpField> {
         double totalWidth = constraints.maxWidth * 0.95;
         // Calculate width for each field, accounting for 8px gap between fields
         double fieldWidth = (totalWidth - (widget.length - 1) * 8) / widget.length;
-
         // Layout input fields horizontally with spacing and fixed width
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
