@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'OTP PIN Field Demo'),
     );
@@ -24,15 +24,14 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
- final String title;
+  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+  final GlobalKey _pinOtpFieldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -45,53 +44,86 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
-         mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Box PIN:', style: TextStyle(fontSize: 20),),
+            Text('PIN:', style: TextStyle(fontSize: 20),),
             SizedBox(height: 5,),
             PinOtpField(
-              length: 5, // OTP length
-              decorator: BoxOtpDecorator(hintChar: '*'), // Custom decorator for boxed style
-              obscure: false, // Show or hide input
-              hintChar: '*', // Custom hint character
-              onCompleted: (String otp) {
-                // Action when OTP entry is complete
-                print('PIN entered: $otp');
-                // Add further OTP validation logic here if needed
+              length: 4,
+              decorator: CustomBoxOtpDecorator(),
+              // autoFocus: true,
+              onCompleted: (code) {
+                // handle completion
+                print('PIN entered: $code');
+              },
+              validator: (value) {
+                if (value != "1234")
+                  return "Invalid PIN";
+                return null;
               },
             ),
+
             SizedBox(height: 30,),
-            Text('Rounded OTP:', style: TextStyle(fontSize: 20),),
+            Text('OTP:', style: TextStyle(fontSize: 20),),
             SizedBox(height: 5,),
             PinOtpField(
-              length: 4, // OTP length
-              decorator: CircleOtpDecorator(hintChar: '-'), // Custom decorator for boxed style
-              obscure: false, // Show or hide input
-              hintChar: '', // Custom hint character
-              onCompleted: (String otp) {
-                // Action when OTP entry is complete
-                print('OTP entered: $otp');
-                // Add further OTP validation logic here if needed
+              length: 4,
+              decorator: BoxOtpDecorator(
+                  hintChar: '*',
+                  borderRadius:10,
+                  borderColor: Colors.blue.shade200,
+                  focusedBorderColor: Colors.blue,
+                  fillColor: Colors.blue.shade50),
+              obscure: false,
+              // autoFocus: true,
+              onCompleted: (code) {
+                // handle completion
+                print('OTP entered: $code');
               },
+              validator: (value) {
+                if (value != "1234")
+                  return "Invalid OTP";
+                return null;
+              },
+              errorStyle: TextStyle(fontSize: 15, color: Colors.red),
+
             ),
-            SizedBox(height: 30,),
-            Text('Underline OTP:', style: TextStyle(fontSize: 20),),
-            SizedBox(height: 5,),
-            PinOtpField(
-              length: 4, // OTP length
-              decorator: UnderlineOtpDecorator(hintChar: '*'), // Custom decorator for boxed style
-              obscure: false, // Show or hide input
-              hintChar: '', // Custom hint character
-              onCompleted: (String otp) {
-                // Action when OTP entry is complete
-                print('OTP entered: $otp');
-                // Add further OTP validation logic here if needed
-              },
-            )
           ],
         ),
       ),
     );
   }
 }
+
+
+class CustomBoxOtpDecorator implements OtpFieldDecorator {
+  @override
+  InputDecoration getDecoration({bool hasError = false}) {
+    return InputDecoration(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: hasError ? Colors.red : Colors.green, width: 2.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: hasError ? Colors.red : Colors.green, width: 2.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: hasError ? Colors.red : Colors.blue, width: 2.0),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.red, width: 2.0),
+      ),
+      filled: true,
+      fillColor: Colors.yellow.shade50,
+      hintText: '#',
+      hintStyle: TextStyle(color: Colors.grey),
+      counterText: '',
+      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+    );
+  }
+}
+

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 part 'pin_otp_field_decoration.dart';
@@ -14,12 +13,12 @@ part 'pin_otp_field_decoration.dart';
 ///
 /// Uses the [OtpFieldDecorator] abstraction to style each input field flexibly for
 /// boxed, circular, underline, or custom appearances.
+
 class PinOtpField extends StatefulWidget {
   /// Number of characters (fields) in the PIN/OTP code.
   final int length;
 
   /// A decorator instance that defines the styling of each individual field.
-  /// This allows different styles like boxed, circle, underline, or fully custom.
   final OtpFieldDecorator decorator;
 
   /// Whether the input text should be obscured (like password fields).
@@ -29,22 +28,22 @@ class PinOtpField extends StatefulWidget {
   final String hintChar;
 
   /// Callback invoked when all PIN/OTP fields are filled.
-  /// Returns the combined text as a single string.
   final ValueChanged<String> onCompleted;
 
-  /// Creates a [PinOtpField] widget.
-  ///
-  /// [length] must be greater than zero.
-  /// [decorator] must not be null and defines the appearance.
-  /// [obscure] defaults to false.
-  /// [hintChar] defaults to '*'.
-  /// [onCompleted] is required and called when input is fully populated.
+  /// Optional validator for the entered code. Returns error message if invalid.
+  final String? Function(String value)? validator;
+
+  /// Style for the error message text.
+  final TextStyle errorStyle;
+
   const PinOtpField({
     Key? key,
     required this.length,
     required this.decorator,
     this.obscure = false,
     this.hintChar = '',
+    this.validator,
+    this.errorStyle = const TextStyle(color: Colors.red, fontSize: 14),
     required this.onCompleted,
   }) : super(key: key);
 
@@ -52,92 +51,213 @@ class PinOtpField extends StatefulWidget {
   _PinOtpFieldState createState() => _PinOtpFieldState();
 }
 
-/// State class that manages text controllers and rendering of the PIN fields.
-class _PinOtpFieldState extends State<PinOtpField> {
-  /// List of controllers, one for each OTP input field, to manage input text.
-  ///
-  late List<TextEditingController> _controllers;
-  late List<FocusNode> _focusNodes;
+class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin {
+  late List<TextEditingController> _controllers; // Controllers for each field
+  late List<FocusNode> _focusNodes; // Focus nodes for each field
+  late List<AnimationController> _scaleControllers; // Animation controllers for scale
+  late List<Animation<double>> _scaleAnimations; // Scale animations for each field
+  late AnimationController _shakeController; // Controller for shake animation
+  late Animation<double> _shakeAnimation; // Shake animation
 
+  bool _hasError = false; // Tracks if there is a validation error
+  String? errorText; // Stores the error message
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers for each text field in the OTP
+    // Initialize controllers and focus nodes for each field
     _controllers = List.generate(widget.length, (_) => TextEditingController());
     _focusNodes = List.generate(widget.length, (_) => FocusNode());
 
+    // Initialize scale animations for each field
+    _scaleControllers = List.generate(
+      widget.length,
+          (_) => AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 120),
+        lowerBound: 0.7,
+        upperBound: 1.0,
+      ),
+    );
+    _scaleAnimations = _scaleControllers
+        .map((c) => Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(parent: c, curve: Curves.easeOut),
+    ))
+        .toList();
+
+    // Initialize shake animation for the whole row
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400),
+    );
+    _shakeAnimation = Tween<double>(begin: 0, end: 16)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(_shakeController);
   }
 
   @override
   void dispose() {
-    // Clean up and dispose each text controller when widget is removed from tree
+    // Dispose all controllers and focus nodes
     for (final controller in _controllers) {
       controller.dispose();
     }
     for (final focusNode in _focusNodes) {
       focusNode.dispose();
     }
+    for (final anim in _scaleControllers) {
+      anim.dispose();
+    }
+    _shakeController.dispose();
     super.dispose();
   }
 
-  /// Builds an individual OTP input field widget at [index].
-  /// Configures the controller, obscuring, decoration, and keyboard interactions.
+  /// Triggers the shake animation for error feedback
+  void _triggerShake() {
+    _shakeController.forward(from: 0);
+  }
+
+  /// Builds a single OTP field with animation and validation
   Widget _buildField(int index) {
-    return TextField(
-      focusNode: _focusNodes[index],
-      controller: _controllers[index],
-      obscureText: widget.obscure, // show dots for sensitive inputs if true
-      decoration: widget.decorator.getDecoration(
-        index,
-        _controllers[index].text.isNotEmpty,
-      ), // Get decoration style per field from the decorator
-      textAlign: TextAlign.center, // Center the input text
-      keyboardType: TextInputType.number, // Numeric keyboard for OTP digits
-      // maxLength: 2, // Only allow one character per field
-      maxLength: widget.length, // Only allow one character per field
+    return AnimatedBuilder(
+      animation: _scaleControllers[index],
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimations[index].value,
+          child: child,
+        );
+      },
+      child: TextField(
+        focusNode: _focusNodes[index],
+        controller: _controllers[index],
+        obscureText: widget.obscure,
+        decoration: widget.decorator.getDecoration(
+          hasError: _hasError,
+        ),
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 1,
         onChanged: (value) {
-        //To check if value is pasted or typed
+          // Handle paste (if user pastes the whole code)
           if (value.length == widget.length) {
             _handlePaste(value);
-          }
-          else {
+          } else {
+            // Only keep the last character if more than one is entered
             if (value.length > 1) {
-              // This can happen if user pastes or quickly types: keep only last char
               _controllers[index].text = value.substring(value.length - 1);
             }
-
             if (value.isNotEmpty) {
-              // Replace current value and move to next field if any
               _controllers[index].text = value.substring(value.length - 1);
+              _scaleControllers[index].forward(from: 0); // Animate scale
+              // Move focus to next field if not last
               if (index < widget.length - 1) {
                 _focusNodes[index + 1].requestFocus();
               }
             } else {
-              // If value is empty, move focus backward if possible
+              // Move focus to previous field if deleting
               if (index > 0) {
                 _focusNodes[index - 1].requestFocus();
                 _controllers[index - 1].selection = TextSelection.collapsed(
                     offset: _controllers[index - 1].text.length);
               }
             }
-
-            // Set cursor position to end in current field
+            // Set cursor at the end
             _controllers[index].selection = TextSelection.collapsed(
                 offset: _controllers[index].text.length);
 
-            // Check if all fields are filled
+            // Validate when all fields are filled
             if (_controllers.every((c) => c.text.isNotEmpty)) {
-              widget.onCompleted(_controllers.map((c) => c.text).join());
+              _validateInput();
             }
-            setState(() {});
           }
-        }
+        },
+      ),
     );
   }
 
+  /// Validates the input using the provided validator and updates error state
+  void _validateInput() {
+    if (widget.validator != null) {
+      String currentValue = _controllers.map((c) => c.text).join();
+      errorText = widget.validator!(currentValue);
+      if (errorText != null) {
+        // If validation fails, show error animation and set error state
+        showErrorAnimation();
+        setState(() {
+          _hasError = true;
+        });
+        return;
+      } else {
+        // If valid, clear error and call onCompleted
+        setState(() {
+          _hasError = false;
+        });
+        _focusNodes.last.unfocus();
+        widget.onCompleted(_controllers.map((c) => c.text).join());
+      }
+    } else {
+      // If no validator, just call onCompleted
+      widget.onCompleted(_controllers.map((c) => c.text).join());
+    }
+  }
+
+  /// Shows error animation (shake) when validation fails
+  void showErrorAnimation() {
+    _triggerShake();
+    // Optionally, clear fields or set error decoration
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shakeController,
+      builder: (context, child) {
+        // Apply shake animation to the whole row
+        return Transform.translate(
+          offset: Offset(_shakeAnimation.value * (_shakeController.status == AnimationStatus.forward ? 1 : 0), 0),
+          child: child,
+        );
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Calculate field width based on available space
+          double totalWidth = constraints.maxWidth * 0.9;
+          double fieldWidth = (totalWidth - (widget.length - 1) * 16) / widget.length;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Row of OTP fields
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(widget.length, (index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: SizedBox(
+                      width: fieldWidth,
+                      child: _buildField(index),
+                    ),
+                  );
+                }),
+              ),
+              // Show error message if validation fails
+              if (_hasError && errorText != null) ...[
+                SizedBox(height: 8),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    errorText!,
+                    style: widget.errorStyle,
+                  ),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Handles paste event: distributes pasted text across fields
   void _handlePaste(String pastedText) {
-    // Distribute pasted text across fields
     for (int i = 0; i < widget.length; i++) {
       if (i < pastedText.length) {
         _controllers[i].text = pastedText[i];
@@ -150,38 +270,6 @@ class _PinOtpFieldState extends State<PinOtpField> {
     }
     _focusNodes[lastFilledIndex].requestFocus();
 
-    // If all fields are filled, invoke completion callback
-    if (_controllers.every((c) => c.text.isNotEmpty)) {
-      widget.onCompleted(_controllers.map((c) => c.text).join());
-    }
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Use LayoutBuilder to adapt the size of fields according to available width
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Calculate total width available (95% of max width for margin)
-        double totalWidth = constraints.maxWidth * 0.95;
-        // Calculate width for each field, accounting for 8px gap between fields
-        double fieldWidth = (totalWidth - (widget.length - 1) * 8) / widget.length;
-        // Layout input fields horizontally with spacing and fixed width
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.length, (index) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4), // Half gap on each side = 8px total
-              child: SizedBox(
-                width: fieldWidth, // Fixed width per input field for uniform visuals
-                child: _buildField(index), // Build individual text field widget
-              ),
-            );
-          }),
-        );
-      },
-    );
+    _validateInput();
   }
 }
-
-
