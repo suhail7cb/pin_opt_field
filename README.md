@@ -14,7 +14,7 @@ A customizable Flutter widget for entering PIN or OTP codes, supporting various 
 - Handles paste and auto-focus
 - Callback when input is complete
 
-## What's New in 0.0.4
+## What's New in 0.0.5
 
 - **Custom error message support:** Show custom error text below the fields on validation failure.
 - **Error border color:** Fields show error border color when validation fails.
@@ -29,7 +29,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pin_otp_field: ^0.0.4
+  pin_otp_field: ^0.0.5
 ```
 
 Then run:
@@ -51,22 +51,26 @@ import 'package:pin_otp_field/pin_otp_field.dart';
 
 ```dart
 PinOtpField(
-  length: 4,
-  obscure: true,
-  decorator: BoxOtpDecorator(
-    borderColor: Colors.blue,
-    borderRadius: 8.0,
-    fillColor: Colors.grey.shade200,
-    hintChar: '*',
-  ),
-  validator: (value) {
-    if (value != '123456') return 'Invalid code';
-    return null;
-  },
-  onCompleted: (code) {
-    print('Completed: $code');
-  },
-)
+length: 4,
+decorator: BoxOtpDecorator(
+hintChar: '*',
+borderRadius:10,
+borderColor: Colors.blue.shade200,
+focusedBorderColor: Colors.blue,
+fillColor: Colors.blue.shade50),
+obscure: false,
+// autoFocus: true,
+onCompleted: (code) {
+// handle completion
+print('OTP entered: $code');
+},
+validator: (value) {
+if (value != "1234")
+return "Invalid OTP";
+return null;
+},
+errorStyle: TextStyle(fontSize: 15, color: Colors.red),
+),
 ```
 
 
