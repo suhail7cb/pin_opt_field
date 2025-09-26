@@ -51,25 +51,25 @@ import 'package:pin_otp_field/pin_otp_field.dart';
 
 ```dart
 PinOtpField(
-length: 4,
-decorator: BoxOtpDecorator(
-hintChar: '*',
-borderRadius:10,
-borderColor: Colors.blue.shade200,
-focusedBorderColor: Colors.blue,
-fillColor: Colors.blue.shade50),
-obscure: false,
-// autoFocus: true,
-onCompleted: (code) {
-// handle completion
-print('OTP entered: $code');
-},
-validator: (value) {
-if (value != "1234")
-return "Invalid OTP";
-return null;
-},
-errorStyle: TextStyle(fontSize: 15, color: Colors.red),
+  length: 4,
+  decorator: BoxOtpDecorator(
+    hintChar: '*',
+    borderRadius:10,
+    borderColor: Colors.blue.shade200,
+    focusedBorderColor: Colors.blue,
+    fillColor: Colors.blue.shade50),
+  obscure: false,
+  // autoFocus: true,
+  onCompleted: (code) {
+    // handle completion
+    print('OTP entered: $code');
+  },
+  validator: (value) {
+    if (value != "1234")
+      return "Invalid OTP";
+    return null;
+  },
+  errorStyle: TextStyle(fontSize: 15, color: Colors.red),
 ),
 ```
 
