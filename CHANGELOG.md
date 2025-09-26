@@ -1,11 +1,10 @@
-## 0.0.1
+## 0.0.2
 
 ```markdown
-* Initial release of the `pin_otp_field` Flutter package.
-* Provides a fully customizable PIN/OTP input field widget.
-* Supports configurable code length and input types (numeric, alphanumeric).
-* Handles paste, autofill, and keyboard input.
-* Includes error and success state styling.
-* Easily integrates with forms and validation logic.
-* Offers flexible appearance customization (colors, borders, shapes).
+**What’s new in 0.0.2:**
+- Custom error message and error border color on validation failure
+- Custom border styles can be created: box, circle, underline etc
+- Improved documentation and code comments
+- Performance improvements
+- Paste handling and focus support
 ```
