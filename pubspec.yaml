@@ -1,6 +1,6 @@
 name: pin_otp_field
 description: "A customizable Flutter widget for entering PIN or OTP codes, supporting various styles and input behaviors."
-version: 0.0.3
+version: 0.0.4
 
 homepage: 'https://github.com/suhail7cb/pin_opt_field'
 

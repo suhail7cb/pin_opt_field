@@ -14,7 +14,7 @@ A customizable Flutter widget for entering PIN or OTP codes, supporting various 
 - Handles paste and auto-focus
 - Callback when input is complete
 
-## What's New in 0.0.3
+## What's New in 0.0.4
 
 - **Custom error message support:** Show custom error text below the fields on validation failure.
 - **Error border color:** Fields show error border color when validation fails.
@@ -29,7 +29,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pin_otp_field: ^0.0.3
+  pin_otp_field: ^0.0.4
 ```
 
 Then run:
