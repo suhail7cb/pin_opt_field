@@ -31,10 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -46,8 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('PIN:', style: TextStyle(fontSize: 20),),
-            SizedBox(height: 5,),
+            Text('PIN:', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 5),
             PinOtpField(
               length: 4,
               decorator: CustomBoxOtpDecorator(),
@@ -57,23 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 print('PIN entered: $code');
               },
               validator: (value) {
-                if (value != "1234")
-                  return "Invalid PIN";
+                if (value != "1234") return "Invalid PIN";
                 return null;
               },
             ),
 
-            SizedBox(height: 30,),
-            Text('OTP:', style: TextStyle(fontSize: 20),),
-            SizedBox(height: 5,),
+            SizedBox(height: 30),
+            Text('OTP:', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 5),
             PinOtpField(
               length: 4,
               decorator: BoxOtpDecorator(
-                  hintChar: '*',
-                  borderRadius:10,
-                  borderColor: Colors.blue.shade200,
-                  focusedBorderColor: Colors.blue,
-                  fillColor: Colors.blue.shade50),
+                hintChar: '*',
+                borderRadius: 10,
+                borderColor: Colors.blue.shade200,
+                focusedBorderColor: Colors.blue,
+                fillColor: Colors.blue.shade50,
+              ),
               obscure: false,
               // autoFocus: true,
               onCompleted: (code) {
@@ -81,12 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 print('OTP entered: $code');
               },
               validator: (value) {
-                if (value != "1234")
-                  return "Invalid OTP";
+                if (value != "1234") return "Invalid OTP";
                 return null;
               },
               errorStyle: TextStyle(fontSize: 15, color: Colors.red),
-
             ),
           ],
         ),
@@ -95,22 +91,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 class CustomBoxOtpDecorator implements OtpFieldDecorator {
   @override
   InputDecoration getDecoration({bool hasError = false}) {
     return InputDecoration(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: hasError ? Colors.red : Colors.green, width: 2.0),
+        borderSide: BorderSide(
+          color: hasError ? Colors.red : Colors.green,
+          width: 2.0,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: hasError ? Colors.red : Colors.green, width: 2.0),
+        borderSide: BorderSide(
+          color: hasError ? Colors.red : Colors.green,
+          width: 2.0,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: hasError ? Colors.red : Colors.blue, width: 2.0),
+        borderSide: BorderSide(
+          color: hasError ? Colors.red : Colors.blue,
+          width: 2.0,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -125,4 +129,3 @@ class CustomBoxOtpDecorator implements OtpFieldDecorator {
     );
   }
 }
-

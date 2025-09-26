@@ -1,4 +1,3 @@
-
 part of 'pin_otp_field.dart';
 
 /// Abstract interface for OTP field decoration
@@ -9,7 +8,6 @@ abstract class OtpFieldDecorator {
   /// Provides [isFilled] to indicate if this field currently has input.
   InputDecoration getDecoration({bool hasError});
 }
-
 
 /// BoxOtpDecorator renders OTP fields with boxed borders and customizable corner radius.
 /// Uses an [OutlineInputBorder] with rounded corners and optional fill color.
@@ -37,20 +35,25 @@ class BoxOtpDecorator implements OtpFieldDecorator {
   });
 
   @override
-  InputDecoration getDecoration({bool hasError= false}) {
-    final Color effectiveBorderColor = hasError  ? errorBorderColor : borderColor;
+  InputDecoration getDecoration({bool hasError = false}) {
+    final Color effectiveBorderColor = hasError
+        ? errorBorderColor
+        : borderColor;
     return InputDecoration(
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(borderRadius,),
+        borderRadius: BorderRadius.circular(borderRadius),
         borderSide: BorderSide(color: effectiveBorderColor, width: borderWidth),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: effectiveBorderColor,width: borderWidth),
+        borderSide: BorderSide(color: effectiveBorderColor, width: borderWidth),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: hasError ? effectiveBorderColor : focusedBorderColor,width: borderWidth),
+        borderSide: BorderSide(
+          color: hasError ? effectiveBorderColor : focusedBorderColor,
+          width: borderWidth,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -58,7 +61,7 @@ class BoxOtpDecorator implements OtpFieldDecorator {
       ),
       filled: true,
       // fillColor: isFilled ? fillColor : Colors.transparent,
-      fillColor:  fillColor,
+      fillColor: fillColor,
       hintText: hintChar,
       hintStyle: hintStyle ?? TextStyle(color: Colors.grey),
       counterText: '',

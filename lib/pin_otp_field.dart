@@ -51,11 +51,14 @@ class PinOtpField extends StatefulWidget {
   _PinOtpFieldState createState() => _PinOtpFieldState();
 }
 
-class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin {
+class _PinOtpFieldState extends State<PinOtpField>
+    with TickerProviderStateMixin {
   late List<TextEditingController> _controllers; // Controllers for each field
   late List<FocusNode> _focusNodes; // Focus nodes for each field
-  late List<AnimationController> _scaleControllers; // Animation controllers for scale
-  late List<Animation<double>> _scaleAnimations; // Scale animations for each field
+  late List<AnimationController>
+  _scaleControllers; // Animation controllers for scale
+  late List<Animation<double>>
+  _scaleAnimations; // Scale animations for each field
   late AnimationController _shakeController; // Controller for shake animation
   late Animation<double> _shakeAnimation; // Shake animation
 
@@ -72,7 +75,7 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
     // Initialize scale animations for each field
     _scaleControllers = List.generate(
       widget.length,
-          (_) => AnimationController(
+      (_) => AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 120),
         lowerBound: 0.7,
@@ -80,9 +83,12 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
       ),
     );
     _scaleAnimations = _scaleControllers
-        .map((c) => Tween<double>(begin: 1.0, end: 1.15).animate(
-      CurvedAnimation(parent: c, curve: Curves.easeOut),
-    ))
+        .map(
+          (c) => Tween<double>(
+            begin: 1.0,
+            end: 1.15,
+          ).animate(CurvedAnimation(parent: c, curve: Curves.easeOut)),
+        )
         .toList();
 
     // Initialize shake animation for the whole row
@@ -90,9 +96,10 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
       vsync: this,
       duration: Duration(milliseconds: 400),
     );
-    _shakeAnimation = Tween<double>(begin: 0, end: 16)
-        .chain(CurveTween(curve: Curves.elasticIn))
-        .animate(_shakeController);
+    _shakeAnimation = Tween<double>(
+      begin: 0,
+      end: 16,
+    ).chain(CurveTween(curve: Curves.elasticIn)).animate(_shakeController);
   }
 
   @override
@@ -130,9 +137,7 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
         focusNode: _focusNodes[index],
         controller: _controllers[index],
         obscureText: widget.obscure,
-        decoration: widget.decorator.getDecoration(
-          hasError: _hasError,
-        ),
+        decoration: widget.decorator.getDecoration(hasError: _hasError),
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
@@ -157,12 +162,14 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
               if (index > 0) {
                 _focusNodes[index - 1].requestFocus();
                 _controllers[index - 1].selection = TextSelection.collapsed(
-                    offset: _controllers[index - 1].text.length);
+                  offset: _controllers[index - 1].text.length,
+                );
               }
             }
             // Set cursor at the end
             _controllers[index].selection = TextSelection.collapsed(
-                offset: _controllers[index].text.length);
+              offset: _controllers[index].text.length,
+            );
 
             // Validate when all fields are filled
             if (_controllers.every((c) => c.text.isNotEmpty)) {
@@ -213,7 +220,11 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
       builder: (context, child) {
         // Apply shake animation to the whole row
         return Transform.translate(
-          offset: Offset(_shakeAnimation.value * (_shakeController.status == AnimationStatus.forward ? 1 : 0), 0),
+          offset: Offset(
+            _shakeAnimation.value *
+                (_shakeController.status == AnimationStatus.forward ? 1 : 0),
+            0,
+          ),
           child: child,
         );
       },
@@ -221,7 +232,8 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
         builder: (context, constraints) {
           // Calculate field width based on available space
           double totalWidth = constraints.maxWidth * 0.9;
-          double fieldWidth = (totalWidth - (widget.length - 1) * 16) / widget.length;
+          double fieldWidth =
+              (totalWidth - (widget.length - 1) * 16) / widget.length;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -243,10 +255,7 @@ class _PinOtpFieldState extends State<PinOtpField> with TickerProviderStateMixin
                 SizedBox(height: 8),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    errorText!,
-                    style: widget.errorStyle,
-                  ),
+                  child: Text(errorText!, style: widget.errorStyle),
                 ),
               ],
             ],
