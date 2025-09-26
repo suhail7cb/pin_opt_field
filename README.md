@@ -1,11 +1,7 @@
 
-
-```markdown
 # pin_otp_field
 
 A customizable Flutter widget for entering PIN or OTP codes, supporting various styles and input behaviors.
-
-[![pub package](https://img.shields.io/pub/v/pin_otp_field.svg)](https://pub.dev/packages/pin_otp_field)
 
 ## Features
 
@@ -18,7 +14,7 @@ A customizable Flutter widget for entering PIN or OTP codes, supporting various 
 - Handles paste and auto-focus
 - Callback when input is complete
 
-## What's New in 0.0.2
+## What's New in 0.0.3
 
 - **Custom error message support:** Show custom error text below the fields on validation failure.
 - **Error border color:** Fields show error border color when validation fails.
@@ -27,20 +23,31 @@ A customizable Flutter widget for entering PIN or OTP codes, supporting various 
 
 ## Getting Started
 
+## Installation
+
 Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pin_otp_field: ^0.0.2
+  pin_otp_field: ^0.0.3
 ```
 
-Import in your Dart code:
+Then run:
+
+```sh
+flutter pub get
+```
+
+
+## Usage
+
+Import the package:
 
 ```dart
 import 'package:pin_otp_field/pin_otp_field.dart';
 ```
 
-## Usage
+## Use the widget in your app:
 
 ```dart
 PinOtpField(
@@ -48,7 +55,6 @@ PinOtpField(
   obscure: true,
   decorator: BoxOtpDecorator(
     borderColor: Colors.blue,
-    borderType: OtpBorderType.box, // box, circle, or underline
     borderRadius: 8.0,
     fillColor: Colors.grey.shade200,
     hintChar: '*',
@@ -62,6 +68,45 @@ PinOtpField(
   },
 )
 ```
+
+
+## Example
+
+```dart
+class OtpScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: PinOtpField(
+          length: 4,
+          decorator: BoxOtpDecorator(
+              hintChar: '*',
+              borderRadius:10,
+              borderColor: Colors.blue.shade200,
+              focusedBorderColor: Colors.blue,
+              fillColor: Colors.blue.shade50),
+          obscure: false,
+          // autoFocus: true,
+          onCompleted: (code) {
+            // handle completion
+            print('OTP entered: $code');
+          },
+          validator: (value) {
+            if (value != "1234")
+              return "Invalid OTP";
+            return null;
+          },
+          errorStyle: TextStyle(fontSize: 15, color: Colors.red),
+        ),
+      ),
+    );
+  }
+}
+
+
+```
+
 
 ## Custom Field Decoration
 
@@ -125,8 +170,7 @@ This allows you to fully control the appearance of each field.
 See the [`example/`](example/) directory for a complete usage example.
 
 
+
 ## License
 
 See [LICENSE](LICENSE).
-
-```
