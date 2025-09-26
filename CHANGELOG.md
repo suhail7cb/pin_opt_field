@@ -1,7 +1,7 @@
-## 0.0.5
+## 0.0.6
 
 ```markdown
-**What’s new in 0.0.5:**
+**What’s new in this version:**
 - Custom error message and error border color on validation failure
 - Custom border styles can be created: box, circle, underline etc
 - Improved documentation and code comments
